@@ -61,6 +61,7 @@ sub get_git_info {
     $branch =~ s/^\* //;
     $git->{branch} = $branch;
 
+    print dump_var( qw/ $git / )."\n";
     return $git;
 }
 
@@ -148,6 +149,34 @@ sub report {
     }
 }
 
+sub dump_var # ( $:VAR_NAME )
+{ ## no critic ( RequireArgUnpacking )
+    use Data::Dump;
+    use PadWalker;
+
+    ## magic to allow static (CLI::LaunchPad::SUB) or instantiated class use (eg, $app->SUB)  ## modified from Module::CoreList::find_modules
+    # my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+
+    my ($name) = @_;
+    my $val = undef;
+    my $ref;
+    my $ref_type;
+    $ref = PadWalker::peek_our(1)->{ $name };
+    if (not defined $ref) { $ref = PadWalker::peek_my(1)->{ $name } };
+    if (defined $ref) {
+        $ref_type = ref $ref;
+        if ( 'SCALAR' eq $ref_type ) { $val = Data::Dump::dump( ${$ref} ) };
+        # if ( 'ARRAY' eq $ref_type ) { $val = Data::Dump::dump( \@{$ref} ) };
+        # if ( 'HASH' eq $ref_type ) { $val = Data::Dump::dump( \%{$ref} ) };
+        # if ( 'CODE' eq $ref_type ) { $val = Data::Dump::dump( &{$ref} ) };
+        # if ( 'GLOB' eq $ref_type ) { $val = Data::Dump::dump( *{$ref} ) };
+        if (not defined $val) { $val = Data::Dump::dump ($ref) };
+        }
+    if (not defined $val) { $val = 'undef' };
+    use Text::ParseWords qw//;
+    $val = join q{ }, Text::ParseWords::quotewords( '\s+', 1, $val );
+    return "$name = $val";
+}
 
 1;
 __END__
