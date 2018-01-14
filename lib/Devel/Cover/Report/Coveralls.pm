@@ -43,21 +43,21 @@ sub get_source {
 sub get_git_info {
     my $git = {
         head => {
-            id              => `git log -1 --pretty=format:'%H'`,
-            author_name     => `git log -1 --pretty=format:'%aN'`,
-            author_email    => `git log -1 --pretty=format:'%ae'`,
-            committer_name  => `git log -1 --pretty=format:'%cN'`,
-            committer_email => `git log -1 --pretty=format:'%ce'`,
-            message         => `git log -1 --pretty=format:'%s'`
+            id              => `git -c color.status=never log -1 --pretty=format:"%H"`,
+            author_name     => `git -c color.status=never log -1 --pretty=format:"%aN"`,
+            author_email    => `git -c color.status=never log -1 --pretty=format:"%ae"`,
+            committer_name  => `git -c color.status=never log -1 --pretty=format:"%cN"`,
+            committer_email => `git -c color.status=never log -1 --pretty=format:"%ce"`,
+            message         => `git -c color.status=never log -1 --pretty=format:"%s"`
         },
         remotes => [
               map {
                   my ( $name, $url ) = split( " ", $_ );
                   +{ name => $name, url => $url }
-              } split( "\n", `git remote -v` )
+              } split( "\n", `git -c color.branch=never -c color.status=never remote -v` )
         ],
     };
-    my ($branch,) = grep { /^\* / } split( "\n", `git branch` );
+    my ($branch,) = grep { /^\* / } split( "\n", `git -c color.branch=never branch` );
     $branch =~ s/^\* //;
     $git->{branch} = $branch;
 
