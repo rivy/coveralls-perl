@@ -73,6 +73,7 @@ sub get_config {
     my $json = {};
     $json->{repo_token} = $config->{repo_token} if $config->{repo_token};
     $json->{repo_token} = $ENV{COVERALLS_REPO_TOKEN} if $ENV{COVERALLS_REPO_TOKEN};
+    $json->{repo_token} = $ENV{COVERALLS_TOKEN} if $ENV{COVERALLS_TOKEN};
 
     my $is_travis;
     if ($ENV{TRAVIS}) {
