@@ -95,7 +95,7 @@ sub get_config {
         $json->{service_event_type} = 'manual';
     }
 
-    die "required repo_token in $CONFIG_FILE, or launch via Travis" if !$json->{repo_token} && !$is_travis;
+    die "required repo_token in \$ENV{}, $CONFIG_FILE, or launch via Travis" if !$json->{repo_token} && !$is_travis;
 
     return $json;
 }
@@ -187,11 +187,15 @@ Devel::Cover::Report::Coveralls - coveralls backend for Devel::Cover
 
 =head2 another CI
 
-1. Get repo_token from your project page in coveralls.
+1. Get the "REPO TOKEN" from your project settings page in coveralls.
 
-2. Write .coveralls.yml (don't add this to public repo)
+2. Add "REPO TOKEN" value to the CI by either:
 
-    repo_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   a. Set the environment variable "repo_token", "COVERALLS_REPO_TOKEN", or "COVERALLS_TOKEN" to the value of "REPO TOKEN"; or
+
+   b. Write .coveralls.yml (don't add this to public repo); * deprecated
+
+      repo_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 3. Run CI.
 
