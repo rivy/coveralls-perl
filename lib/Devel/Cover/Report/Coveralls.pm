@@ -40,6 +40,15 @@ sub get_source {
     };
 }
 
+sub get_scm_info {
+    my $scm = {};
+
+    if ( -d '.git' ) { $scm = get_git_info(); }
+    elsif ( -d '.hg' ) { $scm = get_hg_info(); }
+
+    return $scm;
+}
+
 sub get_git_info {
     my $git = {
         head => {
@@ -62,6 +71,32 @@ sub get_git_info {
     $git->{branch} = $branch;
 
     return $git;
+}
+
+sub get_hg_info {
+    # ref: [Mercurial Workaround (Bitbucket)](https://coveralls.zendesk.com/hc/en-us/articles/206809616-Mercurial-Workaround-Bitbucket-)[`@`](https://archive.is/PkIuo)
+    # note: the "--color=never" and "--pager=never" options may be needed for future versions of `hg`
+    my $hg = {
+        head => {
+            id              => `hg tip --template "{node}\n"`,
+            author_name     => `hg tip --template "{author|person}\n"`,
+            author_email    => `hg tip --template "{author|email}\n"`,
+            message         => `hg tip --template "{desc}\n"`
+        },
+        remotes => [
+              map {
+                  my ( $name, $url ) = split( " = ", $_ );
+                  +{ name => $name, url => $url }
+              } split( "\n", `hg paths` )
+        ],
+    };
+    # `hg` doesn't have the concept of "committer" distinct from "author" => use author info
+    $hg->{head}->{committer_name} = $hg->{head}->{author_name};
+    $hg->{head}->{committer_email} = $hg->{head}->{author_email};
+
+    $hg->{branch} = `hg branch`;
+
+    return $hg;
 }
 
 sub get_config {
@@ -131,7 +166,7 @@ sub report {
     }
 
     my $json = get_config();
-    $json->{git} = eval { get_git_info() } || {};
+    $json->{git} = eval { get_scm_info() } || {};
     $json->{source_files} = \@sfs;
 
     my $response = HTTP::Tiny->new( verify_SSL => 1 )
