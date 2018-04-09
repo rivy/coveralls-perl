@@ -7,22 +7,24 @@ Devel::Cover::Report::Coveralls - coveralls backend for Devel::Cover
 
 ## Travis CI
 
-1\. Add your repo to coveralls. https://coveralls.io/repos/new
+1. Add your repo to coveralls. https://coveralls.io/repos/new
 
-2\. Add setting to .travis.yaml (before\_install and script section)
+2. Add setting to .travis.yaml (before\_install and script section)
 
-    language: perl
-    perl:
-      - 5.16.3
-      - 5.14.4
-    before_install:
-      cpanm -n Devel::Cover::Report::Coveralls
-    script:
-      perl Build.PL && ./Build build && cover -test -report coveralls
+```
+language: perl
+perl:
+    - 5.16.3
+    - 5.14.4
+before_install:
+    cpanm -n Devel::Cover::Report::Coveralls
+script:
+    perl Build.PL && ./Build build && cover -test -report coveralls
+```
 
-3\. push new change to github
+3. push new change to github
 
-4\. updated coveralls your project page
+4. updated coveralls your project page
 
 <div>
     <img src="http://kan.github.io/images/p5-ltsv.png" />
@@ -30,13 +32,15 @@ Devel::Cover::Report::Coveralls - coveralls backend for Devel::Cover
 
 ## another CI
 
-1\. Get repo\_token from your project page in coveralls.
+1. Get the "REPO TOKEN" from your project settings page in coveralls.
 
-2\. Write .coveralls.yml (don't add this to public repo)
+2. Add "REPO TOKEN" value to the CI by either:
 
-    repo_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    1. Set the environment variable "repo_token", "COVERALLS_REPO_TOKEN", or "COVERALLS_TOKEN" to the value of "REPO TOKEN"; or
 
-3\. Run CI.
+    2. Add `repo_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` to .coveralls.yml (don't add this to public repo); * deprecated
+
+3. Run CI.
 
 # DESCRIPTION
 
